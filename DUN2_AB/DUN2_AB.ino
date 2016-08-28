@@ -1,18 +1,18 @@
 /*
-  GAME NAME: http://www.team-arg.org/dummy-manual.html
+  Dungeons 2: http://www.team-arg.org/dun2-manual.html
 
-  Arduboy version 0.1:  http://www.team-arg.org/dummy-downloads.html
+  Arduboy version 0.1:  http://www.team-arg.org/dun2-downloads.html
 
   MADE by TEAM a.r.g. : http://www.team-arg.org/more-about.html
 
-  2016 - JO3RI
+  2016 - GAVENO - JO3RI
 
   License: MIT : https://opensource.org/licenses/MIT
 
 */
 
 //determine the game
-#define GAME_ID 00
+#define GAME_ID 47
 
 #include "Arglib.h"
 #include "globals.h"
