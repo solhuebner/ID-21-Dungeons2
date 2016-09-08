@@ -12,6 +12,7 @@
 #define ROOM_H        3
 
 #define _BV2(bit) ~(1 << (bit))
+#define sign(v) (v > 0) - (v < 0)
 
 void setBit(byte  &b, byte i, bool v)
 {
@@ -31,7 +32,18 @@ void hallwaysGenerate(byte * levelarray, Rect * rooms)
   for (byte i = 0; i < TOTAL_ROOMS - 1; ++i)
   {
     // Connect rooms via 1 bit wide hallways in sequential order
-    
+    int x1 = rooms[i].x;
+    int y1 = rooms[i].y;
+    int x2 = rooms[i + 1].x;
+    int y2 = rooms[i + 1].y;
+    for (var a = 0; a <= abs(x2 - x1); a++)
+    {
+        setBitXY(levelarray, x1 + a * sign(x2 - x1), y1, LEVEL_CHUNK_W, 0);
+    }
+    for (var b = 0; b <= abs(y2 - y1); b++)
+    {
+        setBitXY(levelarray, x2, y1 + b * sign(y2 - y1), LEVEL_CHUNK_W, 0);
+    }
   }
 }
 
