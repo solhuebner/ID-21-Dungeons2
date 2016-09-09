@@ -2,8 +2,10 @@
 #define LEVEL_H
 
 #include <Arduino.h>
-#include "globals.h"
 #include "Arglib.h"
+#include "globals.h"
+
+extern Arduboy arduboy;
 
 #define TOTAL_ROOMS   7
 #define LEVEL_CHUNK_W 16
@@ -22,60 +24,91 @@
 #define sign(v) (v > 0) - (v < 0)
 
 
-byte getChunkID(const byte * levelarray, const int rx, const int ry);
-bool getChunkBit(const byte * levelarray, const int rx, const int ry);
-byte getTileInChunk(const byte chunk, const byte cx, const byte cy);
-byte r_to_c(const int x);
+byte getChunkID(const byte * levelarray, const int &rx, const int &ry);
+bool getChunkBit(const byte * levelarray, const int &rx, const int &ry);
+byte getTileInChunk(const byte * chunkArray, const byte &chunk, const byte &cx, const byte &cy);
+int r_to_c(const int x);
 
-byte getTileID(const byte * levelarray, const int rx, const int ry)
+byte getTileID(const byte * levelarray, const int &rx, const int &ry)
 {
+  //Serial.println("get tile id");
   byte chunk = getChunkID(levelarray, rx, ry);
-  return getTileInChunk(chunk, r_to_c(rx), r_to_c(ry));
+  return getTileInChunk(chunkSet, chunk, r_to_c(rx), r_to_c(ry));
 }
 
-byte getChunkID(const byte * levelarray, const int rx, const int ry)
+bool getSolid(const byte * levelarray, const int &rx, const int &ry)
 {
-  byte b = 0;
-  b |= getChunkBit(levelarray, rx + CHUNK_PW, ry);  // right of current
-  b |= getChunkBit(levelarray, rx, ry - CHUNK_PH) << 1;  // above
-  b |= getChunkBit(levelarray, rx - CHUNK_PW, ry) << 2;  // left
-  b |= getChunkBit(levelarray, rx, ry + CHUNK_PH) << 3;  // below
-
-  return b;
+  return getTileID(levelarray, rx, ry) <= 12;
 }
 
-bool getChunkBit(const byte * levelarray, const int rx, const int ry)
+byte getChunkID(const byte * levelarray, const int &rx, const int &ry)
+{
+  //Serial.println("get chunk id");
+  // Not solid
+  if (!getChunkBit(levelarray, rx, ry))
+  {
+    byte b = 16;// + ((rx + ry) % 5);
+    Serial.print("Chunk ID: ");
+    Serial.println(b);
+    return b;
+  }
+  else
+  {
+    byte b = 0;
+    b |= getChunkBit(levelarray, rx + CHUNK_PW, ry);  // right of current
+    b |= getChunkBit(levelarray, rx, ry - CHUNK_PH) << 1;  // above
+    b |= getChunkBit(levelarray, rx - CHUNK_PW, ry) << 2;  // left
+    b |= getChunkBit(levelarray, rx, ry + CHUNK_PH) << 3;  // below
+
+    Serial.print("Chunk ID: ");
+    Serial.println(b);
+    return b;
+  }
+}
+
+bool getChunkBit(const byte * levelarray, const int &rx, const int &ry)
 {
   if (rx < 0 || rx >= LEVEL_W
   || ry < 0 || ry >= LEVEL_H)
     return 1;
-  byte x = rx / (LEVEL_CHUNK_W * CHUNK_W * 8);    // 8 is number of chunks per byte
-  byte y = ry / (CHUNK_PW) * 2;           // 2 is number of bytes per row
+  byte x = rx / LEVEL_CHUNK_W / CHUNK_W / 8;    // 8 is number of chunks per byte
+  byte y = ry / CHUNK_PW * 2;           // 2 is number of bytes per row
   byte i = (rx / LEVEL_CHUNK_W / CHUNK_W) % 8;
 
   return ((levelarray[x + y] & _BV(i)) > 0);
 }
 
-byte getTileInChunk(const byte * chunkArray, const byte chunkID, const byte cx, const byte cy)
+byte getTileInChunk(const byte * chunkArray, const byte &chunkID, const byte &cx, const byte &cy)
 {
-  byte nibble = chunkArray[(chunkID * 8) + (cx / 2)];
+  /*Serial.print("Chunk ID: ");
+  Serial.print(chunkID);
+  Serial.print(" cx: ");
+  Serial.print(cx);
+  Serial.print(" cy: ");
+  Serial.println(cy);*/
+  byte nibble = pgm_read_byte(chunkArray + (chunkID * 8) + (cx / 2) + (cy * 2));
   byte i = cx % 2;
-  nibble = nibble >> (i * 4);
+  nibble = (nibble >> (i * 4)) & 0X0F;
   return nibble;
 }
 
-byte r_to_c(const int x)
+int r_to_c(const int x)
 {
-  return (byte)((x % 64) / 16);
+  int xx = ((x % 64) / 16);
+  //Serial.print("r_to_c: ");
+  //Serial.print(x);
+  //Serial.print(" -> ");
+  //Serial.println(xx);
+  return xx;
 }
 
-void setBit(byte  &b, byte i, bool v)
+void setBit(byte  &b, const byte &i, const bool &v)
 {
   if (v) b = b | _BV(i);
   else b = b & _BV2(i);
 }
 
-void setBitXY(byte * bytearray, int x, int y, byte w, bool v)
+void setBitXY(byte * bytearray, const int &x, const int &y, const byte &w, const bool &v)
 {
   if (x < 0 || y < 0) return;
 
@@ -165,6 +198,21 @@ void levelGenerate(byte * levelarray, long int levelseed)
   hallwaysGenerate(levelarray, rooms);
 
   free(rooms);
+}
+
+void drawTiles()
+{
+  //Serial.println("draw tiles:");
+  for (int x = (cam.x >> 4); x <= (cam.x >> 4) + 8; ++x)
+  {
+     for (int y = (cam.y >> 4); y <= (cam.y >> 4) + 4; ++y)
+     {
+        byte tile = getTileID(levelArray, x << 4, y << 4);
+        //Serial.print("tile: ");
+        //Serial.println(tile);
+        sprites.drawErase((x << 4) - cam.x, (y << 4) - cam.y, bm_tileset, tile);
+     }
+  }
 }
 
 #endif
