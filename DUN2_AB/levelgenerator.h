@@ -8,11 +8,66 @@
 #define TOTAL_ROOMS   7
 #define LEVEL_CHUNK_W 16
 #define LEVEL_CHUNK_H 16
+#define CHUNK_W       4
+#define CHUNK_H       4
+#define TILE_W        16
+#define TILE_H        16
 #define ROOM_W        3
 #define ROOM_H        3
-
+#define LEVEL_W       LEVEL_CHUNK_W * CHUNK_W *TILE_W
+#define LEVEL_H       LEVEL_CHUNK_H * CHUNK_H *TILE_H
+#define CHUNK_PW      CHUNK_W * TILE_W
+#define CHUNK_PH      CHUNK_H * TILE_H
 #define _BV2(bit) ~(1 << (bit))
 #define sign(v) (v > 0) - (v < 0)
+
+
+byte getChunkID(const byte * levelarray, const int rx, const int ry);
+bool getChunkBit(const byte * levelarray, const int rx, const int ry);
+byte getTileInChunk(const byte chunk, const byte cx, const byte cy);
+byte r_to_c(const int x);
+
+byte getTileID(const byte * levelarray, const int rx, const int ry)
+{
+  byte chunk = getChunkID(levelarray, rx, ry);
+  return getTileInChunk(chunk, r_to_c(rx), r_to_c(ry));
+}
+
+byte getChunkID(const byte * levelarray, const int rx, const int ry)
+{
+  byte b = 0;
+  b |= getChunkBit(levelarray, rx + CHUNK_PW, ry);  // right of current
+  b |= getChunkBit(levelarray, rx, ry - CHUNK_PH) << 1;  // above
+  b |= getChunkBit(levelarray, rx - CHUNK_PW, ry) << 2;  // left
+  b |= getChunkBit(levelarray, rx, ry + CHUNK_PH) << 3;  // below
+
+  return b;
+}
+
+bool getChunkBit(const byte * levelarray, const int rx, const int ry)
+{
+  if (rx < 0 || rx >= LEVEL_W
+  || ry < 0 || ry >= LEVEL_H)
+    return 1;
+  byte x = rx / (LEVEL_CHUNK_W * CHUNK_W * 8);    // 8 is number of chunks per byte
+  byte y = ry / (CHUNK_PW) * 2;           // 2 is number of bytes per row
+  byte i = (rx / LEVEL_CHUNK_W / CHUNK_W) % 8;
+
+  return ((levelarray[x + y] & _BV(i)) > 0);
+}
+
+byte getTileInChunk(const byte * chunkArray, const byte chunkID, const byte cx, const byte cy)
+{
+  byte nibble = chunkArray[(chunkID * 8) + (cx / 2)];
+  byte i = cx % 2;
+  nibble = nibble >> (i * 4);
+  return nibble;
+}
+
+byte r_to_c(const int x)
+{
+  return (byte)((x % 64) / 16);
+}
 
 void setBit(byte  &b, byte i, bool v)
 {
@@ -36,11 +91,11 @@ void hallwaysGenerate(byte * levelarray, Rect * rooms)
     int y1 = rooms[i].y;
     int x2 = rooms[i + 1].x;
     int y2 = rooms[i + 1].y;
-    for (var a = 0; a <= abs(x2 - x1); a++)
+    for (byte a = 0; a <= abs(x2 - x1); a++)
     {
         setBitXY(levelarray, x1 + a * sign(x2 - x1), y1, LEVEL_CHUNK_W, 0);
     }
-    for (var b = 0; b <= abs(y2 - y1); b++)
+    for (byte b = 0; b <= abs(y2 - y1); b++)
     {
         setBitXY(levelarray, x2, y1 + b * sign(y2 - y1), LEVEL_CHUNK_W, 0);
     }
