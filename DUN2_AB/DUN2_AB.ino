@@ -47,10 +47,6 @@ void setup() {
   arduboy.setFrameRate(60);                                 // set the frame rate of the game at 60 fps
   arduboy.initRandomSeed();                                 // This sets the random to more random, remove this if no random is needed !
   levelGenerate(levelArray, 1);
-  Serial.println("setup");
-  levelArray[0] = 0;
-  levelArray[1] = 0xFF;
-  levelArray[2] = 0xFF;
 }
 
 

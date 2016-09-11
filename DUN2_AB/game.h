@@ -28,15 +28,26 @@ void stateGameNextLevel()
 
 void stateGamePlaying()
 {
-  //Serial.println("playing");
-  if (arduboy.pressed(LEFT_BUTTON)) (cam.x > 0) ? cam.x-- : 0;
-  if (arduboy.pressed(RIGHT_BUTTON)) (cam.x < 1023) ? cam.x++ : 895;
-  if (arduboy.pressed(UP_BUTTON)) (cam.y > 0) ? cam.y-- : 0;
-  if (arduboy.pressed(DOWN_BUTTON)) (cam.y < 1023) ? cam.y++ : 895;
   drawTiles();
   checkInputs();
   drawPlayer();
   checkCollisions();
+
+  if (arduboy.justPressed(B_BUTTON))
+  {
+    // Testing
+    level++;
+    levelGenerate(levelArray, level);
+    Serial.println("---Level---");
+    for (int y = 0; y < 16; ++y)
+    {
+      for (int x = 0; x < 16; ++x)
+      {
+        Serial.print((getChunkBit(levelArray, x, y)) ? "|X|" : "   ");
+      }
+      Serial.println(".");
+    }
+  }
 };
 
 void stateGamePause()
