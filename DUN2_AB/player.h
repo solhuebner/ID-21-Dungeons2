@@ -21,7 +21,7 @@ void drawPlayer()
 {
   if (arduboy.everyXFrames(6) && player.walking) player.frame++;
   if (player.frame > 3 ) player.frame = 0;
-  sprites.drawPlusMask(player.x, player.y, player_plus_mask, player.frame + 4 * player.direction);
+  sprites.drawPlusMask(player.x - cam.x, player.y - cam.y, player_plus_mask, player.frame + 4 * player.direction);
 }
 
 #endif

@@ -23,6 +23,7 @@
 #include "elements.h"
 #include "enemies.h"
 #include "levels.h"
+#include "levelgenerator.h"
 
 typedef void (*FunctionPointer) ();
 
@@ -41,16 +42,21 @@ const FunctionPointer PROGMEM mainGameLoop[] = {
 
 
 void setup() {
+  Serial.begin(9600);
   arduboy.start();
   arduboy.setFrameRate(60);                                 // set the frame rate of the game at 60 fps
   arduboy.initRandomSeed();                                 // This sets the random to more random, remove this if no random is needed !
+  levelGenerate(levelArray, 1);
 }
 
 
 void loop() {
+  //Serial.println("Level Data");
+  //for (int i = 0; i < 32; i++)  Serial.println(levelArray[i]);
   if (!(arduboy.nextFrame())) return;
   arduboy.poll();
-  arduboy.clearDisplay();
+  //arduboy.clearDisplay();
+  arduboy.fillScreen(gameState == STATE_GAME_PLAYING);
   ((FunctionPointer) pgm_read_word (&mainGameLoop[gameState]))();
   arduboy.display();
 }

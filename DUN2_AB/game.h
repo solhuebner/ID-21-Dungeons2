@@ -8,12 +8,14 @@
 #include "enemies.h"
 #include "elements.h"
 #include "levels.h"
+#include "levelgenerator.h"
 
 void stateMenuPlay()
 //void stateGamePrepareLevel()
 {
   player.score = 0; 
   gameState = STATE_GAME_NEXT_LEVEL;
+  //Serial.print("play");
 };
 
 
@@ -26,9 +28,26 @@ void stateGameNextLevel()
 
 void stateGamePlaying()
 {
+  drawTiles();
   checkInputs();
   drawPlayer();
   checkCollisions();
+
+  if (arduboy.justPressed(B_BUTTON))
+  {
+    // Testing
+    level++;
+    levelGenerate(levelArray, level);
+    Serial.println("---Level---");
+    for (int y = 0; y < 16; ++y)
+    {
+      for (int x = 0; x < 16; ++x)
+      {
+        Serial.print((getChunkBit(levelArray, x, y)) ? "|X|" : "   ");
+      }
+      Serial.println(".");
+    }
+  }
 };
 
 void stateGamePause()
