@@ -35,8 +35,8 @@ void checkInputs()
   }
 
   // update camera
-  cam.x = player.x - 56;
-  cam.y = player.y - 24;
+  cam.x = max(player.x - 56, 0);
+  cam.y = max(player.y - 24, 0);
 
   if (arduboy.justPressed(A_BUTTON)) gameState = STATE_GAME_PAUSE;
   if (arduboy.justPressed(B_BUTTON)) arduboy.audio.tone(880, 20);

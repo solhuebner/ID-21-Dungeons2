@@ -34,25 +34,30 @@ int sign(int v)
   return (v > 0) - (v < 0);
 }
 
-byte getTileID(const byte * levelarray, const int &rx, const int &ry)
+byte getTileID(const byte * levelarray, const int &rx, const int &ry, const int variance = 0)
 {
   //Serial.println("get tile id");
-  byte chunk = getChunkID(levelarray, rx / 64, ry / 64);
-  return getTileInChunk(chunkSet, chunk, r_to_c(rx), r_to_c(ry));
+  int tx = rx / 64;
+  int ty = ry / 64;
+  byte chunk = getChunkID(levelarray, tx, ty);
+  byte tile = getTileInChunk(chunkSet, chunk, r_to_c(rx), r_to_c(ry));
+  
+  if (tile == 15) tile += variance % 5;
+  return tile;
 }
 
 bool getSolid(const byte * levelarray, const int &rx, const int &ry)
 {
-  return getTileID(levelarray, rx, ry) <= 12;
+  return getTileID(levelarray, rx, ry) <= 11;
 }
 
 byte getChunkID(const byte * levelarray, const int &lx, const int &ly)
 {
   //Serial.println("get chunk id");
   // Not solid
-  if (!getChunkBit(levelarray, lx, ly))
+  if (getChunkBit(levelarray, lx, ly))
   {
-    byte b = 16 + ((lx + ly) % 4);
+    byte b = 16;
     //Serial.print("Chunk ID: ");
     //Serial.println(b);
     return b;
@@ -65,8 +70,14 @@ byte getChunkID(const byte * levelarray, const int &lx, const int &ly)
     b |= getChunkBit(levelarray, lx - 1, ly) << 2;  // left
     b |= getChunkBit(levelarray, lx, ly + 1) << 3;  // below
 
-    //Serial.print("Chunk ID: ");
-    //Serial.println(b);
+    if (b == 0)
+    {
+      b |= getChunkBit(levelarray, lx + 1, ly - 1);  // top right
+      b |= getChunkBit(levelarray, lx - 1, ly - 1) << 1;  // top left
+      b |= getChunkBit(levelarray, lx - 1, ly + 1) << 2;  // left bottom
+      b |= getChunkBit(levelarray, lx + 1, ly + 1) << 3;  // below right
+      if (b > 0) b += 16;
+    }
     return b;
   }
 }
@@ -226,10 +237,11 @@ void drawTiles()
      {
         int ccx = cx + x;
         int ccy = cy + y;
-        byte tile = getTileID(levelArray, cam.x + x, cam.y + y);
+        randomSeed((cam.x + x)/32 + (cam.y + y)/16);
+        byte tile = getTileID(levelArray, cam.x + x, cam.y + y, random(5));
         //Serial.print("tile: ");
         //Serial.println(tile);
-        sprites.drawErase(ccx - cam.x, ccy - cam.y, bm_tileset, tile);
+        sprites.drawOverwrite(ccx - cam.x, ccy - cam.y, bm_tileset, tile);
      }
   }
 }
