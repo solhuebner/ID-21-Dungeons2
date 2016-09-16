@@ -42,9 +42,9 @@ const FunctionPointer PROGMEM mainGameLoop[] = {
 
 
 void setup() {
-  //Serial.begin(9600);
+  Serial.begin(9600);
   arduboy.start();
-  arduboy.setFrameRate(60);                                 // set the frame rate of the game at 60 fps
+  arduboy.setFrameRate(50);                                 // set the frame rate of the game at 60 fps
   arduboy.initRandomSeed();                                 // This sets the random to more random, remove this if no random is needed !
   levelGenerate(levelArray, 1);
 }

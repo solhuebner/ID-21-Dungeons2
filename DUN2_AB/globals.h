@@ -31,6 +31,8 @@
 
 #define FIRST_LEVEL                  0
 
+#define PLAYER_SPEED                 2
+
 
 Arduboy arduboy;
 Sprites sprites(arduboy);
