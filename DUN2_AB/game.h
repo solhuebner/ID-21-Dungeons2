@@ -37,15 +37,20 @@ void stateGamePlaying()
   {
     // Testing
     level++;
+    Serial.println(" ");
+    Serial.println(" ");
+    Serial.println(" ");
+    Serial.print("---Level ");
+    Serial.print(level);
+    Serial.println("---");
     levelGenerate(levelArray, level);
-    //Serial.println("---Level---");
-    for (int y = 0; y < 16; ++y)
+    for (int y = 0; y <= 16; ++y)
     {
-      for (int x = 0; x < 16; ++x)
+      for (int x = 0; x <= 16; ++x)
       {
-        //Serial.print((getChunkBit(levelArray, x, y)) ? "|X|" : "   ");
+        Serial.print((getChunkBit(levelArray, x, y)) ? "|X|" : "   ");
       }
-      //Serial.println(".");
+      Serial.println(" ");
     }
   }
 };

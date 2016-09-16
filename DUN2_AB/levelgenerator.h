@@ -23,6 +23,8 @@ extern Arduboy arduboy;
 #define _BV2(bit) ~(1 << (bit))
 //#define sign(v) (v > 0) - (v < 0)
 
+Rect rooms[TOTAL_ROOMS];
+
 
 byte getChunkID(const byte * levelarray, const int &rx, const int &ry);
 bool getChunkBit(const byte * levelarray, const int &rx, const int &ry);
@@ -34,25 +36,30 @@ int sign(int v)
   return (v > 0) - (v < 0);
 }
 
-byte getTileID(const byte * levelarray, const int &rx, const int &ry)
+byte getTileID(const byte * levelarray, const int &rx, const int &ry, const int variance = 0)
 {
   //Serial.println("get tile id");
-  byte chunk = getChunkID(levelarray, rx / 64, ry / 64);
-  return getTileInChunk(chunkSet, chunk, r_to_c(rx), r_to_c(ry));
+  int tx = rx / 64;
+  int ty = ry / 64;
+  byte chunk = getChunkID(levelarray, tx, ty);
+  byte tile = getTileInChunk(chunkSet, chunk, r_to_c(rx), r_to_c(ry));
+  
+  if (tile == 15) tile += variance % 4;
+  return tile;
 }
 
 bool getSolid(const byte * levelarray, const int &rx, const int &ry)
 {
-  return getTileID(levelarray, rx, ry) <= 12;
+  return getTileID(levelarray, rx, ry) <= 10;
 }
 
 byte getChunkID(const byte * levelarray, const int &lx, const int &ly)
 {
   //Serial.println("get chunk id");
   // Not solid
-  if (!getChunkBit(levelarray, lx, ly))
+  if (getChunkBit(levelarray, lx, ly))
   {
-    byte b = 16 + ((lx + ly) % 4);
+    byte b = 16;
     //Serial.print("Chunk ID: ");
     //Serial.println(b);
     return b;
@@ -65,8 +72,14 @@ byte getChunkID(const byte * levelarray, const int &lx, const int &ly)
     b |= getChunkBit(levelarray, lx - 1, ly) << 2;  // left
     b |= getChunkBit(levelarray, lx, ly + 1) << 3;  // below
 
-    //Serial.print("Chunk ID: ");
-    //Serial.println(b);
+    if (b == 0)
+    {
+      b |= getChunkBit(levelarray, lx + 1, ly - 1);  // top right
+      b |= getChunkBit(levelarray, lx - 1, ly - 1) << 1;  // top left
+      b |= getChunkBit(levelarray, lx - 1, ly + 1) << 2;  // left bottom
+      b |= getChunkBit(levelarray, lx + 1, ly + 1) << 3;  // below right
+      if (b > 0) b += 16;
+    }
     return b;
   }
 }
@@ -119,7 +132,7 @@ void setBit(byte  &b, const byte &i, const bool &v)
 
 void setBitXY(byte * bytearray, const int &x, const int &y, const byte &w, const bool &v)
 {
-  if (x < 0 || y < 0) return;
+  if (x < 0 || y < 0 || x >= LEVEL_CHUNK_W || y >= LEVEL_CHUNK_H) return;
 
   setBit(bytearray[(x/8) + y *(w / 8)], x % 8, v);
 }
@@ -143,76 +156,82 @@ void hallwaysGenerate(byte * levelarray, Rect * rooms)
     {
         setBitXY(levelarray, x2, b, LEVEL_CHUNK_W, 0);
     }
+    setBitXY(levelarray, x2 + xdir, y1, LEVEL_CHUNK_W, 0);
+    setBitXY(levelarray, x2, y1 - ydir, LEVEL_CHUNK_W, 0);
   }
 }
 
 void levelGenerate(byte * levelarray, long int levelseed)
 {
   // Clear level array (all solid)
+  Serial.print("Set all chunks to solid - ");
   for (byte i = 0; i < LEVEL_CHUNK_W * LEVEL_CHUNK_H / 8; ++i)
   {
     levelarray[i] = 0xFF;
   }
+  Serial.println("Done!");
   // Set seed to generate same level sequence each play through
+  Serial.print("Set seed to level - ");
   randomSeed(levelseed);
+  Serial.println("Done!");
 
-  Rect * rooms = (Rect*)malloc(sizeof(Rect) * TOTAL_ROOMS);
+  //Rect * rooms = (Rect*)malloc(sizeof(Rect) * TOTAL_ROOMS);
+  //Rect * rooms = new Rect[TOTAL_ROOMS];
 
   // Randomly place rooms in level
+  Serial.print("Place rooms - ");
   for (byte i = 0; i < TOTAL_ROOMS; ++i)
   {
-    rooms[i].x = random(LEVEL_CHUNK_W - ROOM_W);
-    rooms[i].y = random(LEVEL_CHUNK_H - ROOM_H);
     rooms[i].width = ROOM_W;
     rooms[i].height = ROOM_H;
-  }
-
-  // Remove collisions between rooms
-  bool col = true;
-  byte tries = 255;
-  while (col && tries > 0)
-  {
-    col = false;
-    for (byte a = 0; a < TOTAL_ROOMS; ++a)
+    bool done = false;
+    byte tries = 255;
+    if (random(10) == 0) rooms[i].width++;
+    if (random(10) == 0) rooms[i].height++;
+    while (!done && tries > 0)
     {
-      for (byte b = 0; b < TOTAL_ROOMS; ++b)
+      rooms[i].x = random(4);
+      rooms[i].y = random(4);
+      done = true;
+      for (byte b = 0; b < i; ++b)
       {
-         if (a != b && arduboy.collide(rooms[a], rooms[b]))
-         {
-            col = true;
-            // Move away x
-            if (rooms[a].x < rooms[b].x && rooms[a].x > 0) --rooms[a].x;
-            else if (rooms[a].x >= rooms[b].x && rooms[a].x < LEVEL_CHUNK_W - ROOM_W - 1) ++rooms[a].x;
-            // Move away y
-            if (rooms[a].y < rooms[b].y && rooms[a].y > 0) --rooms[a].y;
-            else if (rooms[a].y >= rooms[b].y && rooms[a].y < LEVEL_CHUNK_H - ROOM_H - 1) ++rooms[a].y;
-         }
+        if (rooms[i].x == rooms[b].x && rooms[i].y == rooms[b].y)
+          done = false;
       }
+      tries--;
     }
-
-    --tries;
   }
+  Serial.println("Done!");
 
   // Imprint rooms into level array
+  Serial.print("Imprint rooms to array - ");
   for (byte a = 0; a < TOTAL_ROOMS; ++a)
   {
-    for (byte x = 0; x < ROOM_W; ++x)
+    Serial.print("r: ");
+    Serial.print(a);
+    Serial.print(" - ");
+    rooms[a].x = (rooms[a].x * 4) + 1;
+    rooms[a].y = (rooms[a].y * 4) + 1;
+    for (byte x = 0; x < rooms[a].width; ++x)
     {
-      for (byte y = 0; y < ROOM_H; ++y)
+      for (byte y = 0; y < rooms[a].height; ++y)
       {
         setBitXY(levelarray, rooms[a].x + x, rooms[a].y + y, LEVEL_CHUNK_W, 0);
       }
     }
   }
+  Serial.println("Done!");
 
   // Create connecting hallways between rooms
+  Serial.print("Create hallways between rooms - ");
   hallwaysGenerate(levelarray, rooms);
+  Serial.println("Done!");
 
   // Object stuff
   player.x = (rooms[0].x + 1) << 6;
   player.y = (rooms[0].y + 1) << 6;
 
-  free(rooms);
+  //delete [] rooms;
 }
 
 void drawTiles()
@@ -226,10 +245,11 @@ void drawTiles()
      {
         int ccx = cx + x;
         int ccy = cy + y;
-        byte tile = getTileID(levelArray, cam.x + x, cam.y + y);
+        randomSeed((cam.x + x)/32 + (cam.y + y)/16);
+        byte tile = getTileID(levelArray, cam.x + x, cam.y + y, min(random(9), 3));
         //Serial.print("tile: ");
         //Serial.println(tile);
-        sprites.drawErase(ccx - cam.x, ccy - cam.y, bm_tileset, tile);
+        sprites.drawOverwrite(ccx - cam.x, ccy - cam.y, bm_tileset, tile);
      }
   }
 }
