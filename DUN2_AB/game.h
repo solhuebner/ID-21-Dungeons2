@@ -40,7 +40,7 @@ void stateGameInventory()
 {
   sprites.drawSelfMasked(3, 45, inventoryTiles, 0);
   sprites.drawSelfMasked(3, 4, inventoryTiles, 1);
-  //if (arduboy.justPressed(A_BUTTON)) gameState = STATE_GAME_PLAYING;
+  if (arduboy.justPressed(A_BUTTON)) gameState = STATE_GAME_PLAYING;
 };
 
 void stateGameOver()
