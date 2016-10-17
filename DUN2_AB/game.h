@@ -34,31 +34,13 @@ void stateGamePlaying()
   drawPlayer();
   checkCollisions();
 
-  if (arduboy.justPressed(B_BUTTON))
-  {
-    // Testing
-    level++;
-    Serial.println(" ");
-    Serial.println(" ");
-    Serial.println(" ");
-    Serial.print("---Level ");
-    Serial.print(level);
-    Serial.println("---");
-    levelGenerate(levelArray, level);
-    for (int y = 0; y <= 16; ++y)
-    {
-      for (int x = 0; x <= 16; ++x)
-      {
-        Serial.print((getChunkBit(levelArray, x, y)) ? "|X|" : "   ");
-      }
-      Serial.println(" ");
-    }
-  }
 };
 
-void stateGamePause()
+void stateGameInventory()
 {
-  if (arduboy.justPressed(A_BUTTON)) gameState = STATE_GAME_PLAYING;
+  sprites.drawSelfMasked(3, 45, inventoryTiles, 0);
+  sprites.drawSelfMasked(3, 4, inventoryTiles, 1);
+  //if (arduboy.justPressed(A_BUTTON)) gameState = STATE_GAME_PLAYING;
 };
 
 void stateGameOver()

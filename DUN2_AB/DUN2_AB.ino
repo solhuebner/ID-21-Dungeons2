@@ -5,7 +5,7 @@
 
   MADE by TEAM a.r.g. : http://www.team-arg.org/more-about.html
 
-  2016 - GAVENO - JO3RI
+  2016 - GAVENO - JO3RI - Castpixel
 
   License: MIT : https://opensource.org/licenses/MIT
 
@@ -36,7 +36,7 @@ const FunctionPointer PROGMEM mainGameLoop[] = {
   stateMenuSoundfx,
   stateGameNextLevel,
   stateGamePlaying,
-  stateGamePause,
+  stateGameInventory,
   stateGameOver,
 };
 

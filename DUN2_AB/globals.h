@@ -16,7 +16,7 @@
 //define game states (on main menu)
 #define STATE_GAME_NEXT_LEVEL        6
 #define STATE_GAME_PLAYING           7
-#define STATE_GAME_PAUSE             8
+#define STATE_GAME_INVENTORY         8
 #define STATE_GAME_OVER              9
 
 #define GAME_TOP                     0
