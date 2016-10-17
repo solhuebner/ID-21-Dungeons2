@@ -1,3 +1,16 @@
+##Version 3
+While in a little kingdom a pleased king enjoyed his treasure, a unique crystal four friends had retrieved from a long forgotten dungeon, a respected queen from a neighbouring kingdom got interest in what this king gave him prestige, respect and power. The queen, ambitious as she was, wanted to expand her kingdom, not by war, but by agreement and deals. To complete her biggest deal ever, for which she had been working for a long time now, the queen would have to use all the respect, prestige and power available to her.
+
+Because this queen wasn't the war type, she didn't want to steal her neighbours crystal, which would lead to war for sure. Instead she set out a reward for finding a new treasure, and people all over her kingdom started looking for shine and glitter. She was convinced, that if she could find an equally special object, it would give her the power needed to close the deal. But none of the treasure brought by the villagers could please her. Now she got more and more convinced, she needed a likewise crystal on her own.
+
+One day a villager came to the palace with the news of a second crystal. It was described as a very special one, with powers not seen by humans before. A crystal know by the ancient as the "magic star". The queen was excited by this news and set a new reward for retrieving this "magic star" from the dungeon in far forgotten place. But no one could fulfil her urging wish to posses this powerful crystal. The queen became inpatient by the people unable to beat the dangerous dungeon, no one had ever left alive and she summoned the four, who had brought the first crystal to the neighbouring king.
+
+The four had settled not far from each other in a quiet place in the north. The warrior and the Valkyrie even became lovers and had a beautiful daughter named Shajar. But when they heard about the queens summon, they all refused. This made the queen furious and she imprisoned our friends, but she didn't know about Shajar, who could escape before being noticed.
+
+Shajar was devastated by the capture of her parents and their friends and didn't know what to do and wandered the woods she lived. One day she met an old woman, who told here about the powers of the second crystal. And with the help of some friends, the girl found a secret way to get close to the prison of her parents and told them about her idea of getting the crystal, setting them free and punishing the queen for what she had done.
+
+Stubborn as she was, Shajar neglected all the warnings about how dangerous the dungeons are. And just before she said goodbye to all of them, the wizard, who had been taken all his spells but one, was able to pass her his hidden ring for holding and casting spells. And so Shajar went on her journey into the dungeon, with nothing more than a ring, a scimitar and a feathered helmet.
+
 ##Version 2
 The king was very pleased with the unique crystal our four friends had retrieved from that dungeon. It gave him prestige, respect and power. All the things a king wishes for, but his queen was ambitious. She wanted her king to expand his kingdom, conquer other kingdoms and become the most powerful man on earth.
 
