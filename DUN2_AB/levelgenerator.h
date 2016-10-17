@@ -26,6 +26,15 @@ extern Arduboy arduboy;
 Rect rooms[TOTAL_ROOMS];
 
 
+#define TOTAL_SPAWNS    9
+#define TYPE_ENEMY      0
+#define TYPE_ENTITY     0x80
+#define ENEMY_BLOB      0
+#define ENTITY_BLOCK    0
+
+extern void deactivateSpawners();
+extern void createSpawner (int x, int y, byte type, byte number_of_spawns);
+
 byte getChunkID(const byte * levelarray, const int &rx, const int &ry);
 bool getChunkBit(const byte * levelarray, const int &rx, const int &ry);
 byte getTileInChunk(const byte * chunkArray, const byte &chunk, const byte &cx, const byte &cy);
@@ -231,7 +240,13 @@ void levelGenerate(byte * levelarray, long int levelseed)
   player.x = (rooms[0].x + 1) << 6;
   player.y = (rooms[0].y + 1) << 6;
 
-  //delete [] rooms;
+  // Create spawners
+  deactivateSpawners();
+  for (byte a = 1; a < TOTAL_ROOMS - 1; ++a)
+  {
+    if (a == 3) createSpawner(((rooms[a].x) << 6), ((rooms[a].y) << 6), TYPE_ENTITY | ENTITY_BLOCK, 16);
+    else createSpawner(((rooms[a].x) << 6), ((rooms[a].y) << 6), TYPE_ENEMY | ENEMY_BLOB, 9);
+  }
 }
 
 void drawTiles()
