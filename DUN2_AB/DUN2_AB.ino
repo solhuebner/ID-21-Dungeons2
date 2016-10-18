@@ -55,8 +55,7 @@ void loop() {
   //for (int i = 0; i < 32; i++)  Serial.println(levelArray[i]);
   if (!(arduboy.nextFrame())) return;
   arduboy.poll();
-  //arduboy.clearDisplay();
-  arduboy.fillScreen(gameState == STATE_GAME_PLAYING);
+  arduboy.clearDisplay();
   ((FunctionPointer) pgm_read_word (&mainGameLoop[gameState]))();
   arduboy.display();
 }
