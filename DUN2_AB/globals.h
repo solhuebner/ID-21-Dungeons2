@@ -24,10 +24,10 @@
 #define GAME_LEFT                    0
 #define GAME_RIGHT                   112
 
-#define FACING_SOUTH                 0
-#define FACING_WEST                  1
-#define FACING_NORTH                 2
-#define FACING_EAST                  3
+#define FACING_NORTH                 0
+#define FACING_EAST                  1
+#define FACING_SOUTH                 2
+#define FACING_WEST                  3
 
 #define FIRST_LEVEL                  0
 
