@@ -33,15 +33,18 @@ void checkInputs()
     if (!getSolid(levelArray, player.x + 16, player.y + 3) && !getSolid(levelArray, player.x + 16, player.y + 12)) player.x += PLAYER_SPEED;
     player.walking = true;
   }
+  
+  else if (arduboy.justPressed(B_BUTTON)) {
+    player.slashing = true;
+    player.walking = false;
+  }
 
   // update camera
   cam.x = max(player.x - 56, 0);
   cam.y = max(player.y - 24, 0);
 
   if (arduboy.pressed(A_BUTTON) && arduboy.pressed(B_BUTTON)) gameState = STATE_GAME_INVENTORY;
-  else if (arduboy.justPressed(B_BUTTON))
-{
-  if (arduboy.justPressed(B_BUTTON))
+  else if (arduboy.justPressed(A_BUTTON))
   {
     // Testing
     level++;
@@ -61,8 +64,6 @@ void checkInputs()
       Serial.println(" ");
     }
   }
-}
-  else if (arduboy.justPressed(A_BUTTON)) arduboy.audio.tone(880, 20);
 }
 
 

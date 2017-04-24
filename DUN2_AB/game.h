@@ -31,6 +31,7 @@ void stateGamePlaying()
   drawTiles();
   checkInputs();
   updateSpawners();
+  checkPlayer();
   drawPlayer();
   checkCollisions();
 
