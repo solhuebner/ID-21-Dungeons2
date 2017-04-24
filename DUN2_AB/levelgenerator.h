@@ -264,7 +264,7 @@ void drawTiles()
         byte tile = getTileID(levelArray, cam.x + x, cam.y + y, min(random(9), 3));
         //Serial.print("tile: ");
         //Serial.println(tile);
-        sprites.drawOverwrite(ccx - cam.x, ccy - cam.y, bm_tileset, tile);
+        sprites.drawOverwrite(ccx - cam.x, ccy - cam.y, tileSet, tile);
      }
   }
 }
